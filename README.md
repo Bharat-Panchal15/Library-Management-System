@@ -35,6 +35,11 @@ A command-line based library management system built using Python OOP. This proj
 
 ---
 
+## 👤 Author
+
+- Bharat Panchal  
+- [GitHub Profile](https://github.com/Bharat-Panchal15)
+
 ## ▶️ How to Run
 
 ```bash
