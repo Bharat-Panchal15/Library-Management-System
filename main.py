@@ -1,3 +1,5 @@
+import re
+
 class Book:
     def __init__(self,title,author):
         self.title = title
@@ -15,11 +17,29 @@ class Library:
         self.books = []
         self.members = []
 
+    @staticmethod
+    def check_none(val):
+        if val is None:
+            return True
+        return False
+    
+    @staticmethod
+    def prompt_member_id():
+        id_pattern = re.compile(r"^\d{4}$")
+        member_id = input("Enter member ID (e.g. 1001): ")
+
+        if not member_id.isdigit():
+            print("Invalid member id. It must only contain numbers.")
+            return None
+
+        if bool(id_pattern.match(member_id)):
+            return int(member_id)
+        return None
+    
     def get_member(self,member_id):
         for member in self.members:
             if member.member_id == member_id:
                 return member
-        
         return None
 
     def get_book(self,book_title):
@@ -157,18 +177,30 @@ if __name__ == "__main__":
             
             case 2:
                 name = input("Enter the name to register in member list: ")
-                member_id = int(input("Enter member ID (e.g. 100X): "))
+                member_id = my_library.prompt_member_id()
+
+                if Library.check_none(member_id):
+                    print("Please enter valid id.")
+                    continue
 
                 my_library.add_member(name,member_id)
             
             case 3:
-                member_id = int(input("Enter member id to issue book: "))
+                member_id = my_library.prompt_member_id()
+                if Library.check_none(member_id):
+                    print("Invalid Member id.")
+                    continue
+
                 book_title = input("Enter title of the book to issue: ")
 
                 my_library.issue_book(member_id,book_title)
             
             case 4:
-                member_id = int(input("Enter member id to return book: "))
+                member_id = my_library.prompt_member_id()
+                if Library.check_none(member_id):
+                    print("Invalid Member id.")
+                    continue
+
                 book_title = input("Enter title of the book to return which book: ")
                 
                 my_library.return_book(member_id,book_title)
@@ -180,12 +212,15 @@ if __name__ == "__main__":
                 my_library.display_members()
             
             case 7:
-                member_id = int(input("Enter id to view all books borrowed by member: "))
+                member_id = my_library.prompt_member_id()
+                if Library.check_none(member_id):
+                    print("Invalid Member id.")
+                    continue
+
                 my_library.view_borrowed_books(member_id)
             
             case 8:
                 query = input("Enter the book to search: ")
-
                 my_library.search_book(query)
 
             case 9:
