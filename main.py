@@ -22,7 +22,7 @@ class Library:
         if val is None:
             return True
         return False
-    
+
     @staticmethod
     def prompt_member_id():
         id_pattern = re.compile(r"^\d{4}$")
@@ -36,6 +36,10 @@ class Library:
             return int(member_id)
         return None
     
+    @staticmethod
+    def prompt_book_title():
+        return input("Enter the Book Title: ").strip()
+    
     def get_member(self,member_id):
         for member in self.members:
             if member.member_id == member_id:
@@ -46,13 +50,12 @@ class Library:
         for book in self.books:
             if book.title == book_title:
                 return book
-        
         return None
     
-    def add_book(self,title,author):
-        new_book = Book(title,author)
+    def add_book(self,book_title,author):
+        new_book = Book(book_title,author)
         self.books.append(new_book)
-        print(f"\n✅ Book '{title}' by {author} added to library!\n")
+        print(f"\n✅ Book '{book_title}' by {author} added to library!\n")
     
     def add_member(self,name,member_id):
         new_member = Member(name,member_id)
@@ -60,7 +63,7 @@ class Library:
         print(f"\n✅ Member '{name}' with ID {member_id} registered!\n")
 
     def display_books(self):
-        if not self.books:
+        if Library.check_none(self.books):
             print("📚 No books in the library yet.\n")
             return
 
@@ -73,7 +76,7 @@ class Library:
         print(f"Total Books: {len(self.books)} \n")
     
     def display_members(self):
-        if not self.members:
+        if Library.check_none(self.members):
             print("No members registered yet.")
             return
         
@@ -85,14 +88,13 @@ class Library:
     
     def issue_book(self,member_id,book_title):
         member = self.get_member(member_id)
-        
-        if member is None:
+        if Library.check_none(member):
             print("❌ Member not found!\n")
             return
 
         book = self.get_book(book_title)
         
-        if book is None:
+        if Library.check_none(book):
             print("❌ Book not found!\n")
             return
         
@@ -105,8 +107,7 @@ class Library:
     
     def return_book(self,member_id,book_title):
         member = self.get_member(member_id)
-        
-        if member is None:
+        if Library.check_none(member):
             print("❌ Member not found!\n")
             return
         
@@ -117,7 +118,7 @@ class Library:
                 book = b
                 break
         
-        if book is None:
+        if Library.check_none(book):
             print("❌ This book was not borrowed by the member!\n")
             return
     
@@ -128,7 +129,7 @@ class Library:
     def view_borrowed_books(self,member_id):
         member = self.get_member(member_id)
         
-        if member is None:
+        if Library.check_none(member):
             print("❌ Member not found!\n")
             return
         
@@ -170,10 +171,10 @@ if __name__ == "__main__":
 
         match user_choice:
             case 1:
-                title = input("Enter the title of the book you want to add: ")
+                book_title = my_library.prompt_book_title()
                 author = input("Enter author name of the book: ")
 
-                my_library.add_book(title,author)
+                my_library.add_book(book_title,author)
             
             case 2:
                 name = input("Enter the name to register in member list: ")
@@ -191,7 +192,7 @@ if __name__ == "__main__":
                     print("Invalid Member id.")
                     continue
 
-                book_title = input("Enter title of the book to issue: ")
+                book_title = my_library.prompt_book_title()
 
                 my_library.issue_book(member_id,book_title)
             
@@ -201,7 +202,7 @@ if __name__ == "__main__":
                     print("Invalid Member id.")
                     continue
 
-                book_title = input("Enter title of the book to return which book: ")
+                book_title = my_library.prompt_book_title()
                 
                 my_library.return_book(member_id,book_title)
             
@@ -234,4 +235,4 @@ if __name__ == "__main__":
                 break
             
             case _:
-                print("Invalid! Please enter valid")
+                print("Invalid! Please enter valid number between 1 to 9")
