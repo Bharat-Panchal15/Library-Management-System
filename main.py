@@ -152,6 +152,14 @@ class Library:
         if not found:
             print("❌ No books found matching your choice.\n")
             return
+    
+    def print_library_summary(self):
+        print("📚 Library Summary:")
+        print(f"• Total Books: {len(self.books)}")
+        print(f"• Total Members: {len(self.members)}")
+
+        issued_books = sum(1 for book in self.books if not book.is_available)
+        print(f"• Currently Issued Books: {issued_books}")
 
 if __name__ == "__main__":
     my_library = Library()
@@ -172,12 +180,12 @@ if __name__ == "__main__":
         match user_choice:
             case 1:
                 book_title = my_library.prompt_book_title()
-                author = input("Enter author name of the book: ")
+                author = input("Enter author name of the book: ").strip()
 
                 my_library.add_book(book_title,author)
             
             case 2:
-                name = input("Enter the name to register in member list: ")
+                name = input("Enter the name to register in member list: ").strip()
                 member_id = my_library.prompt_member_id()
 
                 if Library.check_none(member_id):
@@ -221,16 +229,11 @@ if __name__ == "__main__":
                 my_library.view_borrowed_books(member_id)
             
             case 8:
-                query = input("Enter the book to search: ")
+                query = input("Enter the book to search: ").strip()
                 my_library.search_book(query)
 
             case 9:
-                print("📚 Library Summary:")
-                print(f"• Total Books: {len(my_library.books)}")
-                print(f"• Total Members: {len(my_library.members)}")
-
-                issued_books = sum(1 for book in my_library.books if not book.is_available)
-                print(f"• Currently Issued Books: {issued_books}")
+                my_library.print_library_summary()
                 print("\n🙏 Thank you for using our Library System!\n")
                 break
             
