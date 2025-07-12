@@ -1,0 +1,16 @@
+{
+    "books": [
+        {
+            "title": "Atomic Habits",
+            "author": "James Clear",
+            "is_available": true
+        }
+    ],
+    "members": [
+        {
+            "name": "Bharat Panchal",
+            "member_id": 1001,
+            "borrowed_books": []
+        }
+    ]
+}

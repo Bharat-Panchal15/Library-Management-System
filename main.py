@@ -1,21 +1,81 @@
 import re
+import os
+import json
 
 class Book:
     def __init__(self,title,author):
         self.title = title
         self.author = author
         self.is_available = True
+    
+    def to_dict(self):
+        return {
+            'title':self.title,
+            'author':self.author,
+            'is_available': self.is_available
+        }
+    
+    @staticmethod
+    def from_dict(data):
+        book = Book(data['title'],data['author'])
+        book.is_available = data['is_available']
+        return book
 
 class Member:
     def __init__(self,name,member_id):
         self.name = name
         self.member_id = member_id
         self.borrowed_books = []
+    
+    def to_dict(self):
+        return {
+            'name':self.name,
+            'member_id':self.member_id,
+            'borrowed_books': [book.to_dict() for book in self.borrowed_books]
+        }
+    
+    @staticmethod
+    def from_dict(data):
+        member = Member(data['name'],data['member_id'])
+        member.borrowed_books = [book.from_dict() for book in data['borrowed_books']]
+        return member
 
 class Library:
-    def __init__(self):
+    def __init__(self, filename='libary_data.json'):        
+        self.filename = filename
         self.books = []
         self.members = []
+        self.load_data()
+
+    def load_data(self):
+        if os.path.exists(self.filename):
+            try:
+                with open(self.filename,'r') as file:
+                    data = json.load(file)
+                    self.books = [Book.from_dict(book_data) for book_data in data.get('books',[])]
+                    self.members = [Member.from_dict(member_data) for member_data in data.get('members',[])]
+            
+            except json.JSONDecodeError:
+                print("\nCorrupt file.Starting fresh.")
+                self.books = []
+                self.members = []
+        
+        else:
+            self.books = []
+            self.members = []
+    
+    def save_data(self):
+        try:
+            with open(self.filename,'w') as file:
+                data = {
+                    'books':[book.to_dict() for book in self.books],
+                    'members':[member.to_dict() for member in self.members]
+                }
+
+                json.dump(data,file,indent=4)
+
+        except Exception as e:
+            print(f"Error: {e}")
 
     @staticmethod
     def check_none(val):
@@ -55,11 +115,13 @@ class Library:
     def add_book(self,book_title,author):
         new_book = Book(book_title,author)
         self.books.append(new_book)
+        self.save_data()
         print(f"\n✅ Book '{book_title}' by {author} added to library!\n")
     
     def add_member(self,name,member_id):
         new_member = Member(name,member_id)
         self.members.append(new_member)
+        self.save_data()
         print(f"\n✅ Member '{name}' with ID {member_id} registered!\n")
 
     def display_books(self):
@@ -103,6 +165,7 @@ class Library:
         
         book.is_available = False
         member.borrowed_books.append(book)
+        self.save_data()
         print(f"✅ '{book.title}' issued to {member.name}\n")
     
     def return_book(self,member_id,book_title):
@@ -124,6 +187,7 @@ class Library:
     
         book.is_available = True
         member.borrowed_books.remove(book)
+        self.save_data()
         print(f"✅ '{book.title}' issued by '{member.name}' is returned to library and '{book.title}' is available in library!\n")
 
     def view_borrowed_books(self,member_id):
