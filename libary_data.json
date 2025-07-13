@@ -3,6 +3,21 @@
         {
             "title": "Atomic Habits",
             "author": "James Clear",
+            "is_available": false
+        },
+        {
+            "title": "Python Crash Course",
+            "author": "Eric Matthes",
+            "is_available": false
+        },
+        {
+            "title": "Clean Code",
+            "author": "Robert C. Martin",
+            "is_available": true
+        },
+        {
+            "title": "Fluent Python",
+            "author": "Luciano Ramalho",
             "is_available": true
         }
     ],
@@ -10,6 +25,28 @@
         {
             "name": "Bharat Panchal",
             "member_id": 1001,
+            "borrowed_books": [
+                {
+                    "title": "Atomic Habits",
+                    "author": "James Clear",
+                    "is_available": false
+                }
+            ]
+        },
+        {
+            "name": "Alice",
+            "member_id": 1002,
+            "borrowed_books": [
+                {
+                    "title": "Python Crash Course",
+                    "author": "Eric Matthes",
+                    "is_available": false
+                }
+            ]
+        },
+        {
+            "name": "Bob",
+            "member_id": 1003,
             "borrowed_books": []
         }
     ]

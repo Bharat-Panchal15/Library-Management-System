@@ -17,8 +17,8 @@ class Book:
     
     @staticmethod
     def from_dict(data):
-        book = Book(data['title'],data['author'])
-        book.is_available = data['is_available']
+        book = Book(data.get('title','Unknown Title'),data.get('author','Unknown Author'))
+        book.is_available = data.get('is_available',True)
         return book
 
 class Member:
@@ -36,12 +36,19 @@ class Member:
     
     @staticmethod
     def from_dict(data):
-        member = Member(data['name'],data['member_id'])
-        member.borrowed_books = [book.from_dict() for book in data['borrowed_books']]
+        member = Member(data.get('name','Unknown'),data.get('member_id','Not mentioned'))
+        borrowed_books = data.get("borrowed_books",[])
+
+        if isinstance(borrowed_books,list):
+            member.borrowed_books = [Book.from_dict(book) for book in borrowed_books]
+        
+        else:
+            member.borrowed_books = []
+        
         return member
 
 class Library:
-    def __init__(self, filename='libary_data.json'):        
+    def __init__(self, filename='libary_data.json'):
         self.filename = filename
         self.books = []
         self.members = []
@@ -63,6 +70,9 @@ class Library:
         else:
             self.books = []
             self.members = []
+
+            with open(self.filename,'w') as file:
+                json.dump({'books':[],'members':[]},file,indent=4)
     
     def save_data(self):
         try:
@@ -239,67 +249,72 @@ if __name__ == "__main__":
         print("[8] Search Book")
         print("[9] Exit\n")
 
-        user_choice = int(input("Enter your choice: "))
+        try:
+            user_choice = int(input("Enter your choice: "))
 
-        match user_choice:
-            case 1:
-                book_title = my_library.prompt_book_title()
-                author = input("Enter author name of the book: ").strip()
+        except ValueError:
+            print("Error: Please enter a valid input!")
+        
+        else:
+            match user_choice:
+                case 1:
+                    book_title = my_library.prompt_book_title()
+                    author = input("Enter author name of the book: ").strip()
 
-                my_library.add_book(book_title,author)
-            
-            case 2:
-                name = input("Enter the name to register in member list: ").strip()
-                member_id = my_library.prompt_member_id()
-
-                if Library.check_none(member_id):
-                    print("Please enter valid id.")
-                    continue
-
-                my_library.add_member(name,member_id)
-            
-            case 3:
-                member_id = my_library.prompt_member_id()
-                if Library.check_none(member_id):
-                    print("Invalid Member id.")
-                    continue
-
-                book_title = my_library.prompt_book_title()
-
-                my_library.issue_book(member_id,book_title)
-            
-            case 4:
-                member_id = my_library.prompt_member_id()
-                if Library.check_none(member_id):
-                    print("Invalid Member id.")
-                    continue
-
-                book_title = my_library.prompt_book_title()
+                    my_library.add_book(book_title,author)
                 
-                my_library.return_book(member_id,book_title)
-            
-            case 5:
-                my_library.display_books()
-            
-            case 6:
-                my_library.display_members()
-            
-            case 7:
-                member_id = my_library.prompt_member_id()
-                if Library.check_none(member_id):
-                    print("Invalid Member id.")
-                    continue
+                case 2:
+                    name = input("Enter the name to register in member list: ").strip()
+                    member_id = my_library.prompt_member_id()
 
-                my_library.view_borrowed_books(member_id)
-            
-            case 8:
-                query = input("Enter the book to search: ").strip()
-                my_library.search_book(query)
+                    if Library.check_none(member_id):
+                        print("Please enter valid id.")
+                        continue
 
-            case 9:
-                my_library.print_library_summary()
-                print("\n🙏 Thank you for using our Library System!\n")
-                break
-            
-            case _:
-                print("Invalid! Please enter valid number between 1 to 9")
+                    my_library.add_member(name,member_id)
+                
+                case 3:
+                    member_id = my_library.prompt_member_id()
+                    if Library.check_none(member_id):
+                        print("Invalid Member id.")
+                        continue
+
+                    book_title = my_library.prompt_book_title()
+
+                    my_library.issue_book(member_id,book_title)
+                
+                case 4:
+                    member_id = my_library.prompt_member_id()
+                    if Library.check_none(member_id):
+                        print("Invalid Member id.")
+                        continue
+
+                    book_title = my_library.prompt_book_title()
+                    
+                    my_library.return_book(member_id,book_title)
+                
+                case 5:
+                    my_library.display_books()
+                
+                case 6:
+                    my_library.display_members()
+                
+                case 7:
+                    member_id = my_library.prompt_member_id()
+                    if Library.check_none(member_id):
+                        print("Invalid Member id.")
+                        continue
+
+                    my_library.view_borrowed_books(member_id)
+                
+                case 8:
+                    query = input("Enter the book to search: ").strip()
+                    my_library.search_book(query)
+
+                case 9:
+                    my_library.print_library_summary()
+                    print("\n🙏 Thank you for using our Library System!\n")
+                    break
+                
+                case _:
+                    print("Invalid! Please enter valid number between 1 to 9")
